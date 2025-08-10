@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_to_do_app/model/note.dart';
 import 'package:simple_to_do_app/model/task.dart';
+import 'package:simple_to_do_app/ui/detail/detail_screen.dart';
 import 'package:simple_to_do_app/ui/home/components/note_card.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -146,10 +147,29 @@ class _TodoHomeState extends State<TodoHome> {
           if (todayNotes.isNotEmpty) ...[
             const Text('Today', style: TextStyle(fontSize: 18)),
             ...todayNotes.map(
-              (note) => NoteCard(
-                note: note,
-                onToggle: (task) => _toggleTask(note, task),
-                onDelete: () => _deleteNote(note)
+              (note) => InkWell(
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DetailScreen(
+                        note: note,
+                        onSave: (update) {
+                          setState(() {
+                            final index = _notes.indexOf(note);
+                            _notes[index] = update;
+                          });
+                          _saveNotes();
+                        },
+                      )
+                    )
+                  );
+                },
+                child: NoteCard(
+                  note: note,
+                  onToggle: (task) => _toggleTask(note, task),
+                  onDelete: () => _deleteNote(note)
+                ),
               ),
             ),
           ],
@@ -157,21 +177,59 @@ class _TodoHomeState extends State<TodoHome> {
             const SizedBox(height: 16),
             const Text('Previous Week', style: TextStyle(fontSize: 18)),
             ...weekNotes.map(
-              (note) => NoteCard(
-                note: note,
-                onToggle: (task) => _toggleTask(note, task),
-                onDelete: () => _deleteNote(note)
-              ),
+              (note) => InkWell(
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DetailScreen(
+                        note: note,
+                        onSave: (update) {
+                          setState(() {
+                            final index = _notes.indexOf(note);
+                            _notes[index] = update;
+                          });
+                          _saveNotes();
+                        },
+                      )
+                    )
+                  );
+                },
+                child: NoteCard(
+                  note: note,
+                  onToggle: (task) => _toggleTask(note, task),
+                  onDelete: () => _deleteNote(note)
+                ),
+              )
             ),
           ],
           if (monthNotes.isNotEmpty) ...[
             const SizedBox(height: 16),
             const Text('Months Ago', style: TextStyle(fontSize: 18)),
             ...monthNotes.map(
-              (note) => NoteCard(
-                note: note,
-                onToggle: (task) => _toggleTask(note, task),
-                onDelete: () => _deleteNote(note)
+              (note) => InkWell(
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DetailScreen(
+                        note: note,
+                        onSave: (update) {
+                          setState(() {
+                            final index = _notes.indexOf(note);
+                            _notes[index] = update;
+                          });
+                          _saveNotes();
+                        },
+                      )
+                    )
+                  );
+                },
+                child: NoteCard(
+                  note: note,
+                  onToggle: (task) => _toggleTask(note, task),
+                  onDelete: () => _deleteNote(note)
+                ),
               ),
             ),
           ],

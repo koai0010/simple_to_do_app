@@ -5,8 +5,14 @@ import 'package:simple_to_do_app/model/task.dart';
 class NoteCard extends StatelessWidget {
   final Note note;
   final void Function(Task task) onToggle;
+  final Future<void> Function() onDelete;
 
-  const NoteCard({super.key, required this.note, required this.onToggle});
+  const NoteCard({
+    super.key,
+    required this.note,
+    required this.onToggle,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +23,24 @@ class NoteCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              note.title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    note.title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () async => await onDelete(),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             ...note.tasks.map(

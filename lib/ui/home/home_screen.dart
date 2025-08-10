@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_to_do_app/model/note.dart';
@@ -74,6 +76,34 @@ class _TodoHomeState extends State<TodoHome> {
     _saveNotes();
   }
 
+  Future<void> _deleteNote(Note note) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Delete Note'),
+          content: const Text('Are you sure you want to delete this note?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _notes.remove(note);
+                });
+                _saveNotes();
+                Navigator.pop(context);
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      }
+    );
+  }
+
   List<Note> _filterNotes(Duration range) {
     final now = DateTime.now();
     return _notes
@@ -99,40 +129,52 @@ class _TodoHomeState extends State<TodoHome> {
     final monthNotes = _filterOlder(const Duration(days: 7));
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notes'),
-        actions: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: CircleAvatar(radius: 16),
-          ),
-        ],
-      ),
       body: ListView(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top,
+          left: 16,
+          right: 16,
+          bottom: 16,
+        ),
         children: [
-          const SizedBox(height: 8),
-          const TextField(
-            decoration: InputDecoration(
-              hintText: 'Search notes...',
-              prefixIcon: Icon(Icons.search),
-            ),
+          Text(
+            'To-Do',
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
+          const SizedBox(height: 8),
           const SizedBox(height: 16),
           if (todayNotes.isNotEmpty) ...[
             const Text('Today', style: TextStyle(fontSize: 18)),
-            ...todayNotes.map((note) => NoteCard(note: note, onToggle: (task) => _toggleTask(note, task))),
+            ...todayNotes.map(
+              (note) => NoteCard(
+                note: note,
+                onToggle: (task) => _toggleTask(note, task),
+                onDelete: () => _deleteNote(note)
+              ),
+            ),
           ],
           if (weekNotes.isNotEmpty) ...[
             const SizedBox(height: 16),
-            const Text('Previous Week', style: TextStyle(fontSize: 18)), 
-            ...weekNotes.map((note) => NoteCard(note: note, onToggle: (task) => _toggleTask(note, task))),
+            const Text('Previous Week', style: TextStyle(fontSize: 18)),
+            ...weekNotes.map(
+              (note) => NoteCard(
+                note: note,
+                onToggle: (task) => _toggleTask(note, task),
+                onDelete: () => _deleteNote(note)
+              ),
+            ),
           ],
           if (monthNotes.isNotEmpty) ...[
             const SizedBox(height: 16),
             const Text('Months Ago', style: TextStyle(fontSize: 18)),
-            ...monthNotes.map((note) => NoteCard(note: note, onToggle: (task) => _toggleTask(note, task))),
-          ]
+            ...monthNotes.map(
+              (note) => NoteCard(
+                note: note,
+                onToggle: (task) => _toggleTask(note, task),
+                onDelete: () => _deleteNote(note)
+              ),
+            ),
+          ],
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -143,7 +185,7 @@ class _TodoHomeState extends State<TodoHome> {
             isScrollControlled: true,
             builder: (context) {
               List<TextEditingController> taskControllers = [
-                TextEditingController()
+                TextEditingController(),
               ];
 
               return StatefulBuilder(
@@ -156,7 +198,10 @@ class _TodoHomeState extends State<TodoHome> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           TextField(
-                            decoration: const InputDecoration(labelText: 'Note Title'),
+                            controller: titleController,
+                            decoration: const InputDecoration(
+                              labelText: 'Title',
+                            ),
                           ),
                           const SizedBox(height: 16),
                           ...taskControllers.map((controller) {
@@ -183,15 +228,29 @@ class _TodoHomeState extends State<TodoHome> {
                           ElevatedButton(
                             onPressed: () {
                               final title = titleController.text;
-                              final tasks = taskControllers.map((value) => Task(title: value.text)).toList();
+                              final tasks = taskControllers
+                                  .map((value) => Task(title: value.text))
+                                  .toList();
+
+                              log(
+                                'Adding note with title: $title and tasks: ${tasks.map((task) => task.title).join(', ')}',
+                              );
 
                               if (title.isNotEmpty && tasks.isNotEmpty) {
-                                _addNote(Note(
-                                  title: title,
-                                  tasks: tasks,
-                                  createdAt: DateTime.now(),
-                                ));
-                              Navigator.pop(context);
+                                _addNote(
+                                  Note(
+                                    title: title,
+                                    tasks: tasks,
+                                    createdAt: DateTime.now(),
+                                  ),
+                                );
+                                Navigator.pop(context);
+                                titleController.clear();
+                                taskControllers.removeRange(
+                                  1,
+                                  taskControllers.length,
+                                );
+                                taskControllers[0].clear();
                               }
                             },
                             child: const Text('Save Note'),

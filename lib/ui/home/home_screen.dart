@@ -98,6 +98,17 @@ class _TodoHomeState extends State<TodoHome> {
                 });
                 _saveTodos();
                 Navigator.pop(context);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text(
+                      'Todo removed from your list.',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.red,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
               },
               child: const Text('Delete'),
             ),
@@ -411,6 +422,16 @@ class _TodoHomeState extends State<TodoHome> {
                                       taskControllers.length,
                                     );
                                     taskControllers[0].clear();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: const Text(
+                                          'Todo added successfully',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        backgroundColor: Colors.green[400],
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
                                   }
                                 },
                                 child: const Text('Save Todo'),

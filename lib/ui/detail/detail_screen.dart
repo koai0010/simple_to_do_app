@@ -71,6 +71,16 @@ class _DetailScreenState extends State<DetailScreen> {
 
     widget.onSave(updatedTodo);
     Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(
+          'Changes saved!',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.blue,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   @override

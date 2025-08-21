@@ -1,5 +1,5 @@
 name: simple_to_do_app
-description: "A new Flutter project."
+description: "A simple to do app built with Flutter"
 publish_to: 'none'
 version: 1.0.0
 
@@ -19,7 +19,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
-    
+
   fonts:
       - family: Poppins
         fonts:

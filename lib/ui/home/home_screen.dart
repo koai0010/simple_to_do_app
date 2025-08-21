@@ -290,14 +290,28 @@ class _TodoHomeState extends State<TodoHome> {
                               ),
                             ],
                           ),
-                          const Text(
-                            'Add Todo',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Poppins',
-                              color: Color(0xFF414141),
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Add Todo',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Poppins',
+                                  color: Color(0xFF414141),
+                                ),
+                              ),
+                              Container(
+                                width: 200,
+                                height: 2,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[400],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 16),
                           Column(

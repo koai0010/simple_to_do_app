@@ -255,6 +255,7 @@ class _TodoHomeState extends State<TodoHome> {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         onPressed: () {
+          titleController.clear();
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,

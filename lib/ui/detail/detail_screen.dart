@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:simple_to_do_app/model/note.dart';
+import 'package:simple_to_do_app/model/todo.dart';
 import 'package:simple_to_do_app/model/task.dart';
 
 class DetailScreen extends StatefulWidget {
-  final Note note;
-  final void Function(Note updatedNote) onSave;
-  const DetailScreen({required this.note, required this.onSave, super.key});
+  final Todo todo;
+  final void Function(Todo updatedTodo) onSave;
+  const DetailScreen({required this.todo, required this.onSave, super.key});
 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
@@ -20,13 +20,13 @@ class _DetailScreenState extends State<DetailScreen> {
   void initState() {
     super.initState();
 
-    titleController = TextEditingController(text: widget.note.title);
+    titleController = TextEditingController(text: widget.todo.title);
 
-    taskControllers = widget.note.tasks
+    taskControllers = widget.todo.tasks
         .map((task) => TextEditingController(text: task.title))
         .toList();
 
-    taskCompletedStatus = widget.note.tasks
+    taskCompletedStatus = widget.todo.tasks
         .map((task) => task.isCompleted)
         .toList();
   }
@@ -54,7 +54,7 @@ class _DetailScreenState extends State<DetailScreen> {
     });
   }
 
-  void _updateNote() {
+  void _updateTodo() {
     final updatedTasks = List.generate(
       taskControllers.length,
       (index) => Task(
@@ -63,13 +63,13 @@ class _DetailScreenState extends State<DetailScreen> {
       ),
     ).where((value) => value.title.isNotEmpty).toList();
 
-    final updatedNote = Note(
+    final updatedTodo = Todo(
       title: titleController.text.trim(),
       tasks: updatedTasks,
-      createdAt: widget.note.createdAt,
+      createdAt: widget.todo.createdAt,
     );
 
-    widget.onSave(updatedNote);
+    widget.onSave(updatedTodo);
     Navigator.pop(context);
   }
 
@@ -78,7 +78,7 @@ class _DetailScreenState extends State<DetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Edit Todo"),
-        actions: [IconButton(onPressed: _updateNote, icon: Icon(Icons.save))],
+        actions: [IconButton(onPressed: _updateTodo, icon: Icon(Icons.save))],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

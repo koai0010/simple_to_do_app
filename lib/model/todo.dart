@@ -2,18 +2,18 @@ import 'dart:convert';
 
 import 'package:simple_to_do_app/model/task.dart';
 
-class Note {
+class Todo {
   String title;
   List<Task> tasks;
   DateTime createdAt;
 
-  Note({
+  Todo({
     required this.title, 
     required this.tasks,
     required this.createdAt,
   });
 
-  factory Note.fromJson(Map<String, dynamic> json) => Note(
+  factory Todo.fromJson(Map<String, dynamic> json) => Todo(
     title: json['title'],
     tasks: (json['tasks'] as List)
         .map((task) => Task.fromJson(task))
@@ -27,12 +27,12 @@ class Note {
     'createdAt': createdAt.toIso8601String(),
   };
 
-  static String encode(List<Note> notes) => json.encode(
-    notes.map((note) => note.toJson()).toList(),
+  static String encode(List<Todo> todos) => json.encode(
+    todos.map((todo) => todo.toJson()).toList(),
   );
 
-  static List<Note> decode(String data) =>
+  static List<Todo> decode(String data) =>
     (json.decode(data) as List)
-        .map((item) => Note.fromJson(item))
+        .map((item) => Todo.fromJson(item))
         .toList();
 }

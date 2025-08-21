@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:simple_to_do_app/model/note.dart';
+import 'package:simple_to_do_app/model/todo.dart';
 import 'package:simple_to_do_app/model/task.dart';
 import 'package:simple_to_do_app/ui/detail/detail_screen.dart';
 import 'package:simple_to_do_app/ui/home/components/todo_card.dart';
@@ -38,48 +38,48 @@ class TodoHome extends StatefulWidget {
 }
 
 class _TodoHomeState extends State<TodoHome> {
-  List<Note> _notes = [];
+  List<Todo> _todos = [];
   final titleController = TextEditingController();
   final taskController = <TextEditingController>[];
 
   @override
   void initState() {
     super.initState();
-    _loadNotes();
+    _loadTodos();
     taskController.add(TextEditingController());
   }
 
-  Future<void> _loadNotes() async {
+  Future<void> _loadTodos() async {
     final prefs = await SharedPreferences.getInstance();
-    final data = prefs.getString('notes');
+    final data = prefs.getString('todos');
 
     if (data != null) {
       setState(() {
-        _notes = Note.decode(data);
+        _todos = Todo.decode(data);
       });
     }
   }
 
-  Future<void> _saveNotes() async {
+  Future<void> _saveTodos() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('notes', Note.encode(_notes));
+    await prefs.setString('todos', Todo.encode(_todos));
   }
 
-  void _addNote(Note note) {
+  void _addTodo(Todo todo) {
     setState(() {
-      _notes.insert(0, note);
+      _todos.insert(0, todo);
     });
-    _saveNotes();
+    _saveTodos();
   }
 
-  void _toggleTask(Note note, Task task) {
+  void _toggleTask(Todo todo, Task task) {
     setState(() {
       task.isCompleted = !task.isCompleted;
     });
-    _saveNotes();
+    _saveTodos();
   }
 
-  Future<void> _deleteNote(Note note) {
+  Future<void> _deleteTodo(Todo todo) {
     return showDialog(
       context: context,
       builder: (context) {
@@ -94,9 +94,9 @@ class _TodoHomeState extends State<TodoHome> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  _notes.remove(note);
+                  _todos.remove(todo);
                 });
-                _saveNotes();
+                _saveTodos();
                 Navigator.pop(context);
               },
               child: const Text('Delete'),
@@ -107,150 +107,172 @@ class _TodoHomeState extends State<TodoHome> {
     );
   }
 
-  List<Note> _filterNotes(Duration range) {
+  List<Todo> _filterTodos(Duration range) {
     final now = DateTime.now();
-    return _notes
-        .where((note) => now.difference(note.createdAt) <= range)
+    return _todos
+        .where((todo) => now.difference(todo.createdAt) <= range)
         .toList();
   }
 
-  List<Note> _filterOlder(Duration minRange) {
+  List<Todo> _filterOlder(Duration minRange) {
     final now = DateTime.now();
-    return _notes
-        .where((note) => now.difference(note.createdAt) > minRange)
+    return _todos
+        .where((todo) => now.difference(todo.createdAt) > minRange)
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final todayNotes = _filterNotes(const Duration(days: 1));
-    final weekNotes = _filterNotes(const Duration(days: 7))
+    final todayTodos = _filterTodos(const Duration(days: 1));
+    final weekTodos = _filterTodos(const Duration(days: 7))
         .where(
-          (value) => !_filterNotes(const Duration(days: 1)).contains(value),
+          (value) => !_filterTodos(const Duration(days: 1)).contains(value),
         )
         .toList();
-    final monthNotes = _filterOlder(const Duration(days: 7));
+    final monthTodos = _filterOlder(const Duration(days: 7));
 
     return Scaffold(
-      body: ListView(
-        padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top + 32,
-          left: 24,
-          right: 24,
-          bottom: 24,
-        ),
-        children: [
-          Text(
-            'TO-DO',
-            style: const TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Poppins',
-              color: Color(0xFF414141),
-            ),
-          ),
-          Divider(color: Colors.grey[500]),
-          const SizedBox(height: 8),
-          if (todayNotes.isNotEmpty) ...[
-            const Text(
-              'Today',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
-            ...todayNotes.map(
-              (note) => InkWell(
-                onTap: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => DetailScreen(
-                        note: note,
-                        onSave: (update) {
-                          setState(() {
-                            final index = _notes.indexOf(note);
-                            _notes[index] = update;
-                          });
-                          _saveNotes();
-                        },
+      body: _todos.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/background_no_data.png',
+                    height: 200,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Start organizing your day! \nPress the ➕ button to create a new to-do.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ) 
+            : ListView(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 32,
+                left: 24,
+                right: 24,
+                bottom: 24,
+              ),
+              children: [
+                Text(
+                  'TO-DO',
+                  style: const TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                    color: Color(0xFF414141),
+                  ),
+                ),
+                Divider(color: Colors.grey[500]),
+                const SizedBox(height: 8),
+                if (todayTodos.isNotEmpty) ...[
+                  const Text(
+                    'Today',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  ),
+                  ...todayTodos.map(
+                    (todo) => InkWell(
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailScreen(
+                              todo: todo,
+                              onSave: (update) {
+                                setState(() {
+                                  final index = _todos.indexOf(todo);
+                                  _todos[index] = update;
+                                });
+                                _saveTodos();
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      child: TodoCard(
+                        todo: todo,
+                        onToggle: (task) => _toggleTask(todo, task),
+                        onDelete: () => _deleteTodo(todo),
                       ),
                     ),
-                  );
-                },
-                child: TodoCard(
-                  note: note,
-                  onToggle: (task) => _toggleTask(note, task),
-                  onDelete: () => _deleteNote(note),
-                ),
-              ),
-            ),
-          ],
-          if (weekNotes.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            const Text(
-              'Previous Week',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
-            ...weekNotes.map(
-              (note) => InkWell(
-                onTap: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => DetailScreen(
-                        note: note,
-                        onSave: (update) {
-                          setState(() {
-                            final index = _notes.indexOf(note);
-                            _notes[index] = update;
-                          });
-                          _saveNotes();
-                        },
+                  ),
+                ],
+                if (weekTodos.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Previous Week',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  ),
+                  ...weekTodos.map(
+                    (todo) => InkWell(
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailScreen(
+                              todo: todo,
+                              onSave: (update) {
+                                setState(() {
+                                  final index = _todos.indexOf(todo);
+                                  _todos[index] = update;
+                                });
+                                _saveTodos();
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      child: TodoCard(
+                        todo: todo,
+                        onToggle: (task) => _toggleTask(todo, task),
+                        onDelete: () => _deleteTodo(todo),
                       ),
                     ),
-                  );
-                },
-                child: TodoCard(
-                  note: note,
-                  onToggle: (task) => _toggleTask(note, task),
-                  onDelete: () => _deleteNote(note),
-                ),
-              ),
-            ),
-          ],
-          if (monthNotes.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            const Text(
-              'Months Ago',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
-            ...monthNotes.map(
-              (note) => InkWell(
-                onTap: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => DetailScreen(
-                        note: note,
-                        onSave: (update) {
-                          setState(() {
-                            final index = _notes.indexOf(note);
-                            _notes[index] = update;
-                          });
-                          _saveNotes();
-                        },
+                  ),
+                ],
+                if (monthTodos.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Months Ago',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  ),
+                  ...monthTodos.map(
+                    (todo) => InkWell(
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailScreen(
+                              todo: todo,
+                              onSave: (update) {
+                                setState(() {
+                                  final index = _todos.indexOf(todo);
+                                  _todos[index] = update;
+                                });
+                                _saveTodos();
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      child: TodoCard(
+                        todo: todo,
+                        onToggle: (task) => _toggleTask(todo, task),
+                        onDelete: () => _deleteTodo(todo),
                       ),
                     ),
-                  );
-                },
-                child: TodoCard(
-                  note: note,
-                  onToggle: (task) => _toggleTask(note, task),
-                  onDelete: () => _deleteNote(note),
-                ),
-              ),
+                  ),
+                ],
+              ],
             ),
-          ],
-        ],
-      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
@@ -283,7 +305,10 @@ class _TodoHomeState extends State<TodoHome> {
                               Container(
                                 width: 50,
                                 height: 4,
-                                margin: const EdgeInsets.only(top: 24, bottom: 48),
+                                margin: const EdgeInsets.only(
+                                  top: 24,
+                                  bottom: 48,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.grey[600],
                                   borderRadius: BorderRadius.circular(8),
@@ -339,7 +364,9 @@ class _TodoHomeState extends State<TodoHome> {
                               TextButton.icon(
                                 onPressed: () {
                                   setModalState(() {
-                                    taskControllers.add(TextEditingController());
+                                    taskControllers.add(
+                                      TextEditingController(),
+                                    );
                                   });
                                 },
                                 icon: const Icon(Icons.add),
@@ -364,14 +391,14 @@ class _TodoHomeState extends State<TodoHome> {
                                   final tasks = taskControllers
                                       .map((value) => Task(title: value.text))
                                       .toList();
-                          
+
                                   log(
-                                    'Adding note with title: $title and tasks: ${tasks.map((task) => task.title).join(', ')}',
+                                    'Adding todo with title: $title and tasks: ${tasks.map((task) => task.title).join(', ')}',
                                   );
-                          
+
                                   if (title.isNotEmpty && tasks.isNotEmpty) {
-                                    _addNote(
-                                      Note(
+                                    _addTodo(
+                                      Todo(
                                         title: title,
                                         tasks: tasks,
                                         createdAt: DateTime.now(),

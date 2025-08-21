@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:simple_to_do_app/model/note.dart';
+import 'package:simple_to_do_app/model/todo.dart';
 import 'package:simple_to_do_app/model/task.dart';
 
 class TodoCard extends StatelessWidget {
-  final Note note;
+  final Todo todo;
   final void Function(Task task) onToggle;
   final Future<void> Function() onDelete;
 
   const TodoCard({
     super.key,
-    required this.note,
+    required this.todo,
     required this.onToggle,
     required this.onDelete,
   });
@@ -32,7 +32,7 @@ class TodoCard extends StatelessWidget {
                 child: Padding(
                 padding: const EdgeInsets.only(left: 12),
                 child: Text(
-                  note.title,
+                  todo.title,
                   style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
@@ -48,7 +48,7 @@ class TodoCard extends StatelessWidget {
               ),
               ],
             ),
-            ...note.tasks.map(
+            ...todo.tasks.map(
               (task) => CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               controlAffinity: ListTileControlAffinity.leading,

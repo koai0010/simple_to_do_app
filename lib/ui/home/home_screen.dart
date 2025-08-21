@@ -403,9 +403,11 @@ class _TodoHomeState extends State<TodoHome> {
                                       .map((value) => Task(title: value.text))
                                       .toList();
 
-                                  log(
-                                    'Adding todo with title: $title and tasks: ${tasks.map((task) => task.title).join(', ')}',
-                                  );
+                                  if (kDebugMode) {
+                                    log(
+                                      'Adding todo with title: $title and tasks: ${tasks.map((task) => task.title).join(', ')}',
+                                    );
+                                  }
 
                                   if (title.isNotEmpty && tasks.isNotEmpty) {
                                     _addTodo(

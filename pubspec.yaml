@@ -1,7 +1,7 @@
 name: simple_to_do_app
 description: "A new Flutter project."
 publish_to: 'none'
-version: 0.1.0
+version: 1.0.0
 
 environment:
   sdk: ^3.8.1
@@ -17,4 +17,11 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 flutter:
+  fonts:
+      - family: Poppins
+        fonts:
+          - asset: fonts/Poppins-Regular.ttf
+          - asset: fonts/Poppins-Medium.ttf
+          - asset: fonts/Poppins-Bold.ttf
+            weight: 700
   uses-material-design: true

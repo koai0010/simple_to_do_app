@@ -34,8 +34,8 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   void dispose() {
     titleController.dispose();
-    for (var i in taskControllers) {
-      i.dispose();
+    for (var controller in taskControllers) {
+      controller.dispose();
     }
     super.dispose();
   }
@@ -77,7 +77,7 @@ class _DetailScreenState extends State<DetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Edit Note"),
+        title: const Text("Edit Todo"),
         actions: [IconButton(onPressed: _updateNote, icon: Icon(Icons.save))],
       ),
       body: Padding(

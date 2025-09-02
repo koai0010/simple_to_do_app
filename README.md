@@ -1,3 +1,4 @@
+![Simple To-Do App](simple_to_do_list.png)
 # Flutter To-Do App
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.35.2-blue?logo=flutter)](https://flutter.dev)

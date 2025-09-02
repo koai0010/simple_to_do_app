@@ -27,8 +27,8 @@ This project is designed to demonstrates clean UI and local persistences.
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/your-username/flutter-todo-app.git
-   cd flutter-todo-app
+   git clone https://github.com/koai0010/simple_to_do_app.git
+   cd simple_to_do_app
 
 2. Install dependencies:
    ```bash

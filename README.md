@@ -39,4 +39,23 @@ This project is designed to demonstrates clean UI and local persistences.
    ```bash
    flutter run
 
+### 🏗 Project Structure
+```
+lib/
+├── model/
+│   ├── task.dart
+│   └── todo.dart
+│
+├── ui/
+│   ├── detail/
+│   │   └── detail_screen.dart
+│   │
+│   └── home/
+│       ├── components/
+│       │   └── todo_card.dart
+│       │
+│       └── home_screen.dart
+│
+└── main.dart
 
+```
